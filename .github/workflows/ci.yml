@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Test
+        run: cargo test
+      - name: CLI smoke run
+        run: |
+          cargo run --release -- synth --out corpus.txt --letters 500000
+          cargo run --release -- train-model --corpus corpus.txt --out model.bin
+          cargo run --release -- synth --out plain.txt --letters 1500 --seed 7
+          cargo run --release -- encrypt --input plain.txt --symbols 60 --seed 7 > cipher.txt
+          cargo run --release -- solve --model model.bin --input cipher.txt --truth plain.txt
