@@ -1,0 +1,12 @@
+/target
+**/*.rs.bk
+
+# Files produced by the README walkthrough and the benchmark.
+/corpus.txt
+/model.bin
+/plain.txt
+/cipher.txt
+/key.txt
+/unicity.csv
+/unicity-summary.txt
+/bench-output.txt

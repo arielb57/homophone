@@ -1,0 +1,35 @@
+[package]
+name = "homophone"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Homophonic-substitution cipher solver with an incremental n-gram scorer and a unicity-curve benchmark"
+readme = "README.md"
+keywords = ["cryptanalysis", "cipher", "homophonic", "simulated-annealing"]
+categories = ["command-line-utilities", "algorithms"]
+
+[lib]
+name = "homophone"
+path = "src/lib.rs"
+
+[[bin]]
+name = "homophone"
+path = "src/main.rs"
+
+[[example]]
+name = "bench"
+path = "examples/bench.rs"
+
+[dependencies]
+
+# The recovery tests run thousands of annealing moves; unoptimised builds make
+# `cargo test` roughly 20x slower without testing anything different.
+[profile.test]
+opt-level = 3
+
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+codegen-units = 1
+lto = true
