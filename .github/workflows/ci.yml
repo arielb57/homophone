@@ -8,11 +8,14 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
+  # Lints run on a pinned toolchain. `-D warnings` on a floating `stable` means
+  # a new clippy release breaks the build with no change to this repository,
+  # which makes CI a clock rather than a check. Bump this deliberately.
+  lint:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@1.94.1
         with:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
@@ -20,6 +23,22 @@ jobs:
         run: cargo fmt --all --check
       - name: Clippy
         run: cargo clippy --all-targets -- -D warnings
+
+  # The MSRV in Cargo.toml is a promise, so it gets tested rather than asserted.
+  msrv:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.75.0
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo check --all-targets
+
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - name: Test
         run: cargo test
       - name: CLI smoke run

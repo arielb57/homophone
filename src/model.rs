@@ -234,6 +234,8 @@ impl NgramModel {
                 body.len()
             )));
         }
+        // chunks_exact rather than as_chunks: the latter needs Rust 1.88, above
+        // the MSRV this crate declares and CI tests.
         let table = body
             .chunks_exact(2)
             .map(|c| i16::from_le_bytes([c[0], c[1]]))
